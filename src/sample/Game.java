@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -32,8 +33,48 @@ public class Game implements Initializable {
 
     Random r;
 
+    ArrayList<Field> fields;
+    ArrayList<Player> players;
+    int size = 15;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        fields = new ArrayList<>();
+        players = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j+=2) {
+                Field field = new Field();
+                if(i%2 == 0){
+                    field.setColor(Color.YELLOW);
+                }else{
+                    field.setColor(Color.PURPLE);
+                }
+                field.setX(j*size);
+                field.setY(i*size);
+                fields.add(field);
+            }
+            for (int j = 1; j < 10; j+=2) {
+                Field field = new Field();
+                if(i%2 == 0){
+                    field.setColor(Color.PURPLE);
+                }else{
+                    field.setColor(Color.YELLOW);
+                }
+                field.setX(j*size);
+                field.setY(i*size);
+                fields.add(field);
+            }
+        }
+        Player p1 = new Player(1);
+        p1.setColor(Color.GREEN);
+        p1.setCurrentField(fields.get(0));
+        players.add(p1);
+
+
+        Player p2 = new Player(2);
+        p2.setColor(Color.RED);
+        p2.setCurrentField(fields.get(0));
+        players.add(p2);
         drawMap();
     }
 
@@ -54,10 +95,15 @@ public class Game implements Initializable {
         gc.setFill(Color.WHITE);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(5);
-        gc.fillRect(0,0,x,y);
-        gc.strokeLine(0, 0, x, 0);
-        gc.strokeLine(0, 0, 0, y);
-        gc.strokeLine(x, y, 0, y);
-        gc.strokeLine(x, y, x, 0);
+        for (Field f: fields) {
+            gc.setFill(f.getColor());
+            gc.fillRect(f.getX(),f.getY(),size,size);
+        }
+
+        gc.setFill(players.get(0).getColor());
+        gc.fillRect(players.get(0).getCurrentField().getX()+5,players.get(0).getCurrentField().getY()+1,5,5);
+        gc.setFill(players.get(1).getColor());
+        gc.fillRect(players.get(1).getCurrentField().getX()+5,players.get(1).getCurrentField().getY()+7,5,5);
+
     }
 }
