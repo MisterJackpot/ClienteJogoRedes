@@ -37,6 +37,7 @@ public class Game implements Initializable {
     ArrayList<Player> players;
     int size = 15;
     GraphicsContext gc;
+    Player player;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,12 +68,14 @@ public class Game implements Initializable {
         Player p1 = new Player(1);
         p1.setColor(Color.GREEN);
         p1.setCurrentField(fields.get(0));
+        p1.setOffset(1);
         players.add(p1);
 
 
         Player p2 = new Player(2);
         p2.setColor(Color.RED);
         p2.setCurrentField(fields.get(0));
+        p2.setOffset(7);
         players.add(p2);
         drawMap();
     }
@@ -85,11 +88,20 @@ public class Game implements Initializable {
 
         diceValue.setText(String.valueOf(dice));
 
+        Player p1;
+        if(player.getId() == 1){
+            p1 = player;
+            player = players.get(1);
+        }else{
+            p1 = player;
+            player = players.get(0);
+        }
 
-        gc.setFill(players.get(0).getCurrentField().getColor());
-        gc.fillRect(players.get(0).getCurrentField().getX()+5,players.get(0).getCurrentField().getY()+1,5,5);
+        gc.setFill(p1.getCurrentField().getColor());
+        gc.fillRect(p1.getCurrentField().getX()+5,p1.getCurrentField().getY()+p1.getOffset(),5,5);
 
-        Player p1 = players.get(0);
+
+
         if(p1.getCurrentField().getNumber() + dice >= fields.size()){
             p1.setCurrentField(fields.get(fields.size()-1));
             System.out.println("WIN");
@@ -97,14 +109,15 @@ public class Game implements Initializable {
             p1.setCurrentField(fields.get(p1.getCurrentField().getNumber() + dice));
         }
 
-        gc.setFill(players.get(0).getColor());
-        gc.fillRect(players.get(0).getCurrentField().getX()+5,players.get(0).getCurrentField().getY()+1,5,5);
+        gc.setFill(p1.getColor());
+        gc.fillRect(p1.getCurrentField().getX()+5,p1.getCurrentField().getY()+p1.getOffset(),5,5);
 
     }
 
     private void drawMap(){
         gc = board.getGraphicsContext2D();
         r = new Random();
+        player = players.get(0);
         double x = board.getWidth();
         double y = board.getHeight();
         gc.setFill(Color.WHITE);

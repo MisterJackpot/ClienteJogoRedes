@@ -6,9 +6,18 @@ public class Player {
     private Field currentField;
     private int id;
     private Color color;
+    private int offset;
 
     public Player(int id) {
         this.id = id;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public Field getCurrentField() {
