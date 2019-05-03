@@ -36,33 +36,32 @@ public class Game implements Initializable {
     ArrayList<Field> fields;
     ArrayList<Player> players;
     int size = 15;
+    GraphicsContext gc;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         fields = new ArrayList<>();
         players = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j+=2) {
+            for (int j = 0; j < 10; j++) {
                 Field field = new Field();
-                if(i%2 == 0){
-                    field.setColor(Color.YELLOW);
+                if(j%2 == 0) {
+                    if (i % 2 == 0) {
+                        field.setColor(Color.YELLOW);
+                    } else {
+                        field.setColor(Color.PURPLE);
+                    }
                 }else{
-                    field.setColor(Color.PURPLE);
+                    if(i%2 == 0){
+                        field.setColor(Color.PURPLE);
+                    }else{
+                        field.setColor(Color.YELLOW);
+                    }
                 }
                 field.setX(j*size);
                 field.setY(i*size);
                 fields.add(field);
-            }
-            for (int j = 1; j < 10; j+=2) {
-                Field field = new Field();
-                if(i%2 == 0){
-                    field.setColor(Color.PURPLE);
-                }else{
-                    field.setColor(Color.YELLOW);
-                }
-                field.setX(j*size);
-                field.setY(i*size);
-                fields.add(field);
+                field.setNumber(fields.indexOf(field));
             }
         }
         Player p1 = new Player(1);
@@ -85,10 +84,26 @@ public class Game implements Initializable {
         System.out.println(dice);
 
         diceValue.setText(String.valueOf(dice));
+
+
+        gc.setFill(players.get(0).getCurrentField().getColor());
+        gc.fillRect(players.get(0).getCurrentField().getX()+5,players.get(0).getCurrentField().getY()+1,5,5);
+
+        Player p1 = players.get(0);
+        if(p1.getCurrentField().getNumber() + dice >= fields.size()){
+            p1.setCurrentField(fields.get(fields.size()-1));
+            System.out.println("WIN");
+        }else {
+            p1.setCurrentField(fields.get(p1.getCurrentField().getNumber() + dice));
+        }
+
+        gc.setFill(players.get(0).getColor());
+        gc.fillRect(players.get(0).getCurrentField().getX()+5,players.get(0).getCurrentField().getY()+1,5,5);
+
     }
 
     private void drawMap(){
-        GraphicsContext gc = board.getGraphicsContext2D();
+        gc = board.getGraphicsContext2D();
         r = new Random();
         double x = board.getWidth();
         double y = board.getHeight();

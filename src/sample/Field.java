@@ -8,8 +8,17 @@ public class Field {
 
     private double x;
     private double y;
+    private int number;
 
     public Field() {
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public Color getColor() {
