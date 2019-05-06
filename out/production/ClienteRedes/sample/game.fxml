@@ -9,18 +9,24 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <GridPane alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="449.0" prefWidth="325.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Game">
-    <columnConstraints>
-        <ColumnConstraints />
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints />
-    </rowConstraints>
+
     <children>
         <AnchorPane maxHeight="449.0" maxWidth="325.0" minHeight="449.0" minWidth="325.0" prefHeight="449.0" prefWidth="325.0">
          <children>
             <Canvas fx:id="board" height="205.0" layoutX="14.0" layoutY="14.0" width="296.0" />
-            <Button onAction="#rollDice" fx:id="diceBtn" layoutX="122.0" layoutY="386.0" mnemonicParsing="false" text="Rolar Dados" />
-            <Label  fx:id="diceValue" layoutX="159.0" layoutY="354.0" text="0" />
-         </children></AnchorPane>
+            <Button fx:id="diceBtn" layoutX="122.0" layoutY="386.0" mnemonicParsing="false" onAction="#rollDice" text="Rolar Dados" />
+            <Label fx:id="diceValue" layoutX="159.0" layoutY="354.0" text="0" />
+            <Label fx:id="p1Nick" layoutX="43.0" layoutY="225.0" text="Nick 1" />
+            <Label fx:id="p1Field" layoutX="248.0" layoutY="225.0" text="Casa" />
+            <Label fx:id="p2Nick" layoutX="43.0" layoutY="264.0" text="Nick 2" />
+            <Label fx:id="p2Field" layoutX="248.0" layoutY="264.0" text="Casa" />
+         </children>
+        </AnchorPane>
     </children>
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
 </GridPane>

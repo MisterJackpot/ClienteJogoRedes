@@ -53,7 +53,8 @@ public class Game implements Initializable {
         }
         players.add(p1);
 
-
+        getBoard();
+        drawMap();
 
 
         diceBtn.setDisable(true);
@@ -61,28 +62,49 @@ public class Game implements Initializable {
     }
 
     private void getBoard(){
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                Field field = new Field(FieldType.START);
-                if(j%2 == 0) {
-                    if (i % 2 == 0) {
-                        field.setColor(Color.YELLOW);
-                    } else {
-                        field.setColor(Color.PURPLE);
-                    }
-                }else{
-                    if(i%2 == 0){
-                        field.setColor(Color.PURPLE);
-                    }else{
-                        field.setColor(Color.YELLOW);
-                    }
-                }
-                field.setX(j*size);
-                field.setY(i*size);
-                fields.add(field);
-                field.setValue(fields.indexOf(field));
-            }
+
+        Field field = new Field(FieldType.START);
+        field.setX(0);
+        field.setY(0);
+        fields.add(field);
+        for (int i = 1; i < 9; i++) {
+            field = new Field(FieldType.BACKWARD);
+            field.setX(fields.get(i-1).getX() + 15);
+            field.setY(0);
+            fields.add(field);
         }
+        field = new Field(FieldType.START);
+        field.setX(fields.get(8).getX());
+        field.setY(15);
+        fields.add(field);
+        field = new Field(FieldType.JOKE);
+        field.setX(fields.get(8).getX());
+        field.setY(30);
+        fields.add(field);
+        for (int i = 11; i < 19; i++) {
+            field = new Field(FieldType.FOWARD);
+            field.setX(fields.get(i-1).getX() - 15);
+            field.setY(30);
+            fields.add(field);
+        }
+        field = new Field(FieldType.START);
+        field.setX(fields.get(fields.size()-1).getX());
+        field.setY(45);
+        fields.add(field);
+        field = new Field(FieldType.JOKE);
+        field.setX(fields.get(fields.size()-1).getX());
+        field.setY(60);
+        fields.add(field);
+        for (int i = 21; i < 29; i++) {
+            field = new Field(FieldType.AGAIN);
+            field.setX(fields.get(i-1).getX() + 15);
+            field.setY(60);
+            fields.add(field);
+        }
+        field = new Field(FieldType.START);
+        field.setX(fields.get(fields.size()-1).getX());
+        field.setY(75);
+        fields.add(field);
     }
 
     @FXML
@@ -126,18 +148,11 @@ public class Game implements Initializable {
         player = players.get(0);
         double x = board.getWidth();
         double y = board.getHeight();
-        gc.setFill(Color.WHITE);
-        gc.setStroke(Color.BLACK);
         gc.setLineWidth(5);
         for (Field f: fields) {
             gc.setFill(f.getColor());
             gc.fillRect(f.getX(),f.getY(),size,size);
         }
-
-        gc.setFill(players.get(0).getColor());
-        gc.fillRect(players.get(0).getCurrentField().getX()+5,players.get(0).getCurrentField().getY()+1,5,5);
-        gc.setFill(players.get(1).getColor());
-        gc.fillRect(players.get(1).getCurrentField().getX()+5,players.get(1).getCurrentField().getY()+7,5,5);
 
     }
 }
