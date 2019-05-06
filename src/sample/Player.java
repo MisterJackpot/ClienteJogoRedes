@@ -3,10 +3,11 @@ package sample;
 import javafx.scene.paint.Color;
 
 public class Player {
-    private Field currentField;
+    private FieldVisual currentField;
     private int id;
     private Color color;
     private int offset;
+    private String name;
 
     public Player(int id) {
         this.id = id;
@@ -20,11 +21,23 @@ public class Player {
         this.offset = offset;
     }
 
-    public Field getCurrentField() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public FieldVisual getCurrentField() {
         return currentField;
     }
 
-    public void setCurrentField(Field currentField) {
+    public void setCurrentField(FieldVisual currentField) {
         this.currentField = currentField;
     }
 

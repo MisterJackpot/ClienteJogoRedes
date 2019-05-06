@@ -25,8 +25,9 @@ public class Connection {
     }
 
     public Socket start() throws IOException {
-        InetAddress ipHost = InetAddress.getByName("127.0.0.1");
-        Socket s = new Socket(ipHost,3004,ipHost,port);
+        InetAddress ipHost = InetAddress.getByName("192.168.0.167");
+        InetAddress ipHost2 = InetAddress.getByName(host);
+        Socket s = new Socket(ipHost2,3000,ipHost,0);
 
         return s;
     }

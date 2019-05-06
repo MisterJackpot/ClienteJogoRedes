@@ -8,6 +8,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import server.components.Field;
+import server.components.FieldType;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,12 +27,25 @@ public class Game implements Initializable {
     @FXML
     Label diceValue;
 
+    @FXML
+    Label p1Nick;
+
+    @FXML
+    Label p2Nick;
+
+    @FXML
+    Label p1Field;
+
+    @FXML
+    Label p2Field;
+
     Random r;
     Connection connection;
-    boolean myTurn;
+    static boolean myTurn;
 
-    ArrayList<Field> fields;
-    ArrayList<Player> players;
+    ArrayList<FieldVisual> fields;
+    static ArrayList<Player> players;
+    ArrayList<Field> list;
     int size = 15;
     GraphicsContext gc;
     Player player;
@@ -46,6 +61,7 @@ public class Game implements Initializable {
         try {
             p1 = new Player((Integer)connection.is.readObject());
             p1.setColor(Character.c);
+            p1.setOffset(3);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -53,55 +69,137 @@ public class Game implements Initializable {
         }
         players.add(p1);
 
-        getBoard();
+
+        try {
+            list = (ArrayList<Field>)connection.is.readObject();
+            System.out.println(list);
+            getBoard(list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<ArrayList> ps = null;
+        try{
+            ps = (ArrayList) connection.is.readObject();
+            for (ArrayList<String> a: ps) {
+                if(Integer.valueOf(a.get(0)) == p1.getId()){
+                    p1.setName(a.get(1));
+                }else{
+                    Player p2 = new Player(Integer.valueOf(a.get(0)));
+                    p2.setName(a.get(1));
+                    p2.setColor(Color.BLUEVIOLET);
+                    p2.setOffset(9);
+                    p2.setCurrentField(fields.get(0));
+                    players.add(p2);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        p1.setCurrentField(fields.get(0));
+
         drawMap();
 
+        p1Nick.setText(p1.getName());
+        p2Nick.setText(players.get(1).getName());
+        p1Field.setText("0");
+        p2Field.setText("0");
 
         diceBtn.setDisable(true);
 
+        Thread thread = new Thread(() -> game());
+
+        thread.start();
     }
 
-    private void getBoard(){
+    private void game() {
 
-        Field field = new Field(FieldType.START);
+        do {
+            String turn = null;
+            try {
+                turn = (String) connection.is.readObject();
+                if (turn.equals("Your Turn")) {
+                    myTurn = true;
+                    diceBtn.setDisable(false);
+                }else if(turn.equals("Update Position")){
+                    ArrayList<Integer> aux = (ArrayList<Integer>) connection.is.readObject();
+                    for (int i = 0; i < 4; i+=2) {
+                        if(aux.get(i) == players.get(0).getId()){
+                            FieldVisual f = players.get(0).getCurrentField();
+                            players.get(0).setCurrentField(fields.get(aux.get(i+1)));
+                            redraw(players.get(0),f);
+                        }else{
+                            FieldVisual f = players.get(1).getCurrentField();
+                            players.get(1).setCurrentField(fields.get(aux.get(i+1)));
+                            redraw(players.get(1),f);
+                        }
+                    }
+                }
+            } catch(IOException e){
+                e.printStackTrace();
+            } catch(ClassNotFoundException e){
+                e.printStackTrace();
+            }
+
+
+        } while (true) ;
+    }
+
+    public void redraw(Player p1, FieldVisual f){
+        gc = board.getGraphicsContext2D();
+        gc.setFill(f.getColor());
+        gc.fillRect(f.getX()+5,f.getY()+p1.getOffset(),5,5);
+
+        gc.setFill(p1.getColor());
+        gc.fillRect(p1.getCurrentField().getX()+5,p1.getCurrentField().getY()+p1.getOffset(),5,5);
+    }
+
+
+    private void getBoard(ArrayList<Field> aux){
+        FieldVisual field = new FieldVisual(aux.get(0).getType());
         field.setX(0);
         field.setY(0);
         fields.add(field);
         for (int i = 1; i < 9; i++) {
-            field = new Field(FieldType.BACKWARD);
+            field = new FieldVisual(aux.get(i).getType());
             field.setX(fields.get(i-1).getX() + 15);
             field.setY(0);
             fields.add(field);
         }
-        field = new Field(FieldType.START);
+        field = new FieldVisual(aux.get(9).getType());
         field.setX(fields.get(8).getX());
         field.setY(15);
         fields.add(field);
-        field = new Field(FieldType.JOKE);
+        field = new FieldVisual(aux.get(10).getType());
         field.setX(fields.get(8).getX());
         field.setY(30);
         fields.add(field);
         for (int i = 11; i < 19; i++) {
-            field = new Field(FieldType.FOWARD);
+            field = new FieldVisual(aux.get(i).getType());
             field.setX(fields.get(i-1).getX() - 15);
             field.setY(30);
             fields.add(field);
         }
-        field = new Field(FieldType.START);
+        field = new FieldVisual(aux.get(19).getType());
         field.setX(fields.get(fields.size()-1).getX());
         field.setY(45);
         fields.add(field);
-        field = new Field(FieldType.JOKE);
+        field = new FieldVisual(aux.get(20).getType());
         field.setX(fields.get(fields.size()-1).getX());
         field.setY(60);
         fields.add(field);
-        for (int i = 21; i < 29; i++) {
-            field = new Field(FieldType.AGAIN);
+        for (int i = 21; i < 30; i++) {
+            field = new FieldVisual(aux.get(i).getType());
             field.setX(fields.get(i-1).getX() + 15);
             field.setY(60);
             fields.add(field);
         }
-        field = new Field(FieldType.START);
+        field = new FieldVisual(aux.get(31).getType());
         field.setX(fields.get(fields.size()-1).getX());
         field.setY(75);
         fields.add(field);
@@ -114,31 +212,16 @@ public class Game implements Initializable {
 
         System.out.println(dice);
 
+
         diceValue.setText(String.valueOf(dice));
 
-        Player p1;
-        if(player.getId() == 1){
-            p1 = player;
-            player = players.get(1);
-        }else{
-            p1 = player;
-            player = players.get(0);
+        try {
+            connection.os.writeObject(dice);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        gc.setFill(p1.getCurrentField().getColor());
-        gc.fillRect(p1.getCurrentField().getX()+5,p1.getCurrentField().getY()+p1.getOffset(),5,5);
 
-
-
-        if(p1.getCurrentField().getValue() + dice >= fields.size()){
-            p1.setCurrentField(fields.get(fields.size()-1));
-            System.out.println("WIN");
-        }else {
-            p1.setCurrentField(fields.get(p1.getCurrentField().getValue() + dice));
-        }
-
-        gc.setFill(p1.getColor());
-        gc.fillRect(p1.getCurrentField().getX()+5,p1.getCurrentField().getY()+p1.getOffset(),5,5);
 
     }
 
@@ -149,10 +232,15 @@ public class Game implements Initializable {
         double x = board.getWidth();
         double y = board.getHeight();
         gc.setLineWidth(5);
-        for (Field f: fields) {
+        for (FieldVisual f: fields) {
             gc.setFill(f.getColor());
             gc.fillRect(f.getX(),f.getY(),size,size);
         }
 
+        gc.setFill(player.getColor());
+        gc.fillRect(player.getCurrentField().getX()+5,player.getCurrentField().getY()+player.getOffset(),5,5);
+
+        gc.setFill(players.get(1).getColor());
+        gc.fillRect(players.get(1).getCurrentField().getX()+5,players.get(1).getCurrentField().getY()+players.get(1).getOffset(),5,5);
     }
 }

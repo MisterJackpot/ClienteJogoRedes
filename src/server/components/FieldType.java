@@ -1,4 +1,4 @@
-package sample;
+package server.components;
 
 import java.io.Serializable;
 

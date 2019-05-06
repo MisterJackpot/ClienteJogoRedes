@@ -24,7 +24,7 @@ public class Controller {
     private void handleButtonAction(ActionEvent event) {
         System.out.println(portNumber.getText());
 
-        connection = new Connection(Integer.valueOf(portNumber.getText()),"localhost");
+        connection = new Connection(Integer.valueOf(portNumber.getText()),"192.168.0.195");
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("character.fxml"));

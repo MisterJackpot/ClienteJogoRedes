@@ -1,12 +1,12 @@
 package sample;
 
-import javafx.scene.paint.Color;
 
-import java.io.Serializable;
+import javafx.scene.paint.Color;
+import server.components.FieldType;
+
 import java.util.ArrayList;
 
-public class Field implements Serializable {
-
+public class FieldVisual {
     private Color color;
     private FieldType type;
     private ArrayList<Integer> playersInField;
@@ -15,7 +15,7 @@ public class Field implements Serializable {
     private double y;
     private int value;
 
-    public Field(FieldType type) {
+    public FieldVisual(FieldType type) {
         this.type = type;
         switch (type){
             case START:
@@ -71,3 +71,5 @@ public class Field implements Serializable {
         this.y = y;
     }
 }
+
+
