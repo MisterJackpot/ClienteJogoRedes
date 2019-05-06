@@ -32,6 +32,7 @@ public class Game implements Initializable {
     Label diceValue;
 
     Random r;
+    Connection connection;
 
     ArrayList<Field> fields;
     ArrayList<Player> players;
@@ -78,6 +79,8 @@ public class Game implements Initializable {
         p2.setOffset(7);
         players.add(p2);
         drawMap();
+
+        connection = Controller.connection;
     }
 
     @FXML

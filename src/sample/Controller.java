@@ -18,9 +18,13 @@ public class Controller {
     @FXML
     TextField portNumber;
 
+    public static Connection connection;
+
     @FXML
     private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
+        System.out.println(portNumber.getText());
+
+        connection = new Connection(Integer.valueOf(portNumber.getText()),"localhost");
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("game.fxml"));
