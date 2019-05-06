@@ -1,19 +1,13 @@
 package sample;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +27,7 @@ public class Game implements Initializable {
 
     Random r;
     Connection connection;
+    boolean myTurn;
 
     ArrayList<Field> fields;
     ArrayList<Player> players;
@@ -42,11 +37,33 @@ public class Game implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        connection = Controller.connection;
         fields = new ArrayList<>();
         players = new ArrayList<>();
+        myTurn = false;
+
+        Player p1 = null;
+        try {
+            p1 = new Player((Integer)connection.is.readObject());
+            p1.setColor(Character.c);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        players.add(p1);
+
+
+
+
+        diceBtn.setDisable(true);
+
+    }
+
+    private void getBoard(){
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                Field field = new Field();
+                Field field = new Field(FieldType.START);
                 if(j%2 == 0) {
                     if (i % 2 == 0) {
                         field.setColor(Color.YELLOW);
@@ -63,28 +80,14 @@ public class Game implements Initializable {
                 field.setX(j*size);
                 field.setY(i*size);
                 fields.add(field);
-                field.setNumber(fields.indexOf(field));
+                field.setValue(fields.indexOf(field));
             }
         }
-        Player p1 = new Player(1);
-        p1.setColor(Color.GREEN);
-        p1.setCurrentField(fields.get(0));
-        p1.setOffset(1);
-        players.add(p1);
-
-
-        Player p2 = new Player(2);
-        p2.setColor(Color.RED);
-        p2.setCurrentField(fields.get(0));
-        p2.setOffset(7);
-        players.add(p2);
-        drawMap();
-
-        connection = Controller.connection;
     }
 
     @FXML
     private void rollDice(ActionEvent event) {
+        diceBtn.setDisable(true);
         int dice = r.nextInt(6)+1;
 
         System.out.println(dice);
@@ -105,11 +108,11 @@ public class Game implements Initializable {
 
 
 
-        if(p1.getCurrentField().getNumber() + dice >= fields.size()){
+        if(p1.getCurrentField().getValue() + dice >= fields.size()){
             p1.setCurrentField(fields.get(fields.size()-1));
             System.out.println("WIN");
         }else {
-            p1.setCurrentField(fields.get(p1.getCurrentField().getNumber() + dice));
+            p1.setCurrentField(fields.get(p1.getCurrentField().getValue() + dice));
         }
 
         gc.setFill(p1.getColor());

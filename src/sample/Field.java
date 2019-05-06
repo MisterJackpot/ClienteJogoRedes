@@ -2,23 +2,49 @@ package sample;
 
 import javafx.scene.paint.Color;
 
-public class Field {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Field implements Serializable {
 
     private Color color;
+    private FieldType type;
+    private ArrayList<Integer> playersInField;
 
     private double x;
     private double y;
-    private int number;
+    private int value;
 
-    public Field() {
+    public Field(FieldType type) {
+        this.type = type;
+        switch (type){
+            case START:
+                this.color = Color.BLACK;
+                break;
+            case FINISH:
+                this.color = Color.BLACK;
+                break;
+            case BACKWARD:
+                this.color = Color.RED;
+                break;
+            case FOWARD:
+                this.color = Color.AQUA;
+                break;
+            case JOKE:
+                this.color = Color.LIGHTPINK;
+                break;
+            case AGAIN:
+                this.color = Color.YELLOWGREEN;
+                break;
+        }
     }
 
-    public int getNumber() {
-        return number;
+    public int getValue() {
+        return value;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setValue(int value) {
+        this.value = value;
     }
 
     public Color getColor() {

@@ -27,7 +27,7 @@ public class Controller {
         connection = new Connection(Integer.valueOf(portNumber.getText()),"localhost");
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("game.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("character.fxml"));
             Stage stage = (Stage) enterBtn.getScene().getWindow();
             Scene scene = new Scene(loader.load());
             stage.setScene(scene);
