@@ -1,13 +1,17 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import server.components.Field;
 import server.components.FieldType;
 
@@ -39,6 +43,9 @@ public class Game implements Initializable {
     @FXML
     Label p2Field;
 
+    @FXML
+    Label msgLabel;
+
     Random r;
     Connection connection;
     static boolean myTurn;
@@ -49,6 +56,7 @@ public class Game implements Initializable {
     int size = 15;
     GraphicsContext gc;
     Player player;
+    static String msg, pos1, pos2;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -109,16 +117,31 @@ public class Game implements Initializable {
         p2Nick.setText(players.get(1).getName());
         p1Field.setText("0");
         p2Field.setText("0");
+        diceBtn.setText("Rodar Dado");
 
         diceBtn.setDisable(true);
 
         Thread thread = new Thread(() -> game());
 
         thread.start();
+
     }
 
+    public void redraw(){
+            p1Field.setText(pos1);
+            p2Field.setText(pos2);
+            msgLabel.setText(msg);
+            if (pos1 == "Ganhador" || pos2 == "Ganhador") {
+                diceBtn.setText("Menu");
+                diceBtn.setDisable(false);
+            }
+    }
+
+
+    //Thread responsavel por cuidar de receber mensagens do servidor
     private void game() {
 
+        boolean jogo = true;
         do {
             String turn = null;
             try {
@@ -133,23 +156,38 @@ public class Game implements Initializable {
                             FieldVisual f = players.get(0).getCurrentField();
                             players.get(0).setCurrentField(fields.get(aux.get(i+1)));
                             redraw(players.get(0),f);
+                            pos1 = aux.get(i+1).toString();
                         }else{
                             FieldVisual f = players.get(1).getCurrentField();
                             players.get(1).setCurrentField(fields.get(aux.get(i+1)));
                             redraw(players.get(1),f);
+                            pos2 = aux.get(i+1).toString();
                         }
                     }
+                    String msg1 = (String) connection.is.readObject();
+                    msg = msg1;
+
+                }else if(turn.equals("Finish Game")){
+                    jogo = false;
+                    connection.close();
+                    msg = ("Final de Jogo");
+                    if (Integer.valueOf(pos1) > Integer.valueOf(pos2)){
+                        pos1 = ("Ganhador");
+                    }else{
+                        pos2 = ("Ganhador");
+                    }
+
                 }
             } catch(IOException e){
                 e.printStackTrace();
             } catch(ClassNotFoundException e){
                 e.printStackTrace();
             }
-
-
-        } while (true) ;
+            Platform.runLater(()->redraw());
+        } while (jogo) ;
     }
 
+    //Desenha os campos alterados pelo servidor
     public void redraw(Player p1, FieldVisual f){
         gc = board.getGraphicsContext2D();
         gc.setFill(f.getColor());
@@ -160,6 +198,7 @@ public class Game implements Initializable {
     }
 
 
+    //Gera o campo de jogo utilizando o tipo dos campos recebidos do servidor
     private void getBoard(ArrayList<Field> aux){
         FieldVisual field = new FieldVisual(aux.get(0).getType());
         field.setX(0);
@@ -199,32 +238,51 @@ public class Game implements Initializable {
             field.setY(60);
             fields.add(field);
         }
-        field = new FieldVisual(aux.get(31).getType());
+
+        field = new FieldVisual(aux.get(30).getType());
         field.setX(fields.get(fields.size()-1).getX());
         field.setY(75);
         fields.add(field);
+        field = new FieldVisual(aux.get(31).getType());
+        field.setX(fields.get(fields.size()-1).getX());
+        field.setY(90);
+        fields.add(field);
     }
 
+    //Rola dado e envia resultado para o servidor
     @FXML
     private void rollDice(ActionEvent event) {
-        diceBtn.setDisable(true);
-        int dice = r.nextInt(6)+1;
+        if(diceBtn.getText().equals("Menu")){
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
+                Stage stage = (Stage) diceBtn.getScene().getWindow();
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+            }catch (IOException io){
+                io.printStackTrace();
+            }
+        }else {
 
-        System.out.println(dice);
+            diceBtn.setDisable(true);
+            int dice = r.nextInt(6) + 1;
+
+            System.out.println(dice);
 
 
-        diceValue.setText(String.valueOf(dice));
+            diceValue.setText(String.valueOf(dice));
 
-        try {
-            connection.os.writeObject(dice);
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                connection.os.writeObject(dice);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
 
-
     }
 
+
+    //Desenha o mapa com os campos recebidos
     private void drawMap(){
         gc = board.getGraphicsContext2D();
         r = new Random();

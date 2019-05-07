@@ -38,6 +38,7 @@ public class Character implements Initializable {
 
     }
 
+    //Eniva nome para o servidor
     @FXML
     private void entrar(ActionEvent event) {
         try {

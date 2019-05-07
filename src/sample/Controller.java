@@ -20,6 +20,7 @@ public class Controller {
 
     public static Connection connection;
 
+    //Conecta com o servidor
     @FXML
     private void handleButtonAction(ActionEvent event) {
         System.out.println(portNumber.getText());
