@@ -58,6 +58,7 @@ public class Game implements Initializable {
     Player player;
     static String msg, pos1, pos2;
 
+    //Inicializa os dados e  tela do jogo
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         connection = Controller.connection;
@@ -134,6 +135,10 @@ public class Game implements Initializable {
             if (pos1 == "Ganhador" || pos2 == "Ganhador") {
                 diceBtn.setText("Menu");
                 diceBtn.setDisable(false);
+                msg = "";
+                pos1 = "0";
+                pos2 = "0";
+                players.clear();
             }
     }
 
